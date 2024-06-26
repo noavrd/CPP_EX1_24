@@ -1,3 +1,5 @@
+# noavrd@gmail.com
+
 #!make -f
 
 CXX=clang
