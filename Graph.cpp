@@ -16,9 +16,9 @@ namespace ariel {
     void Graph::printGraph() const {
         for (size_t i = 0; i < adjMatrix.size(); i++) {
             for (size_t j = 0; j < adjMatrix[0].size(); j++) {
-                cout << adjMatrix[i][j] << " ";
+                std::cout << adjMatrix[i][j] << " ";
             }
-            cout << "\n";
+            std::cout << "\n";
         }
     }
 
