@@ -7,6 +7,9 @@
 #include <queue>
 #include <string>
 #include <limits>
+#include <sstream>
+#include <stack>
+#include <unordered_set>
 
 namespace ariel {
 
@@ -20,7 +23,10 @@ namespace ariel {
 
         static std::string isBipartite(const Graph& g);
 
-        static bool negativeCycle(const Graph& g);
+        static void negativeCycle(const Graph& g);
+
+    private:
+        static bool bfs(const Graph& g, int start, std::vector<int>& distance, std::vector<int>& predecessor);
     };
 
 }
