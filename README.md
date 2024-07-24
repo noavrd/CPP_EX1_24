@@ -2,11 +2,6 @@
 
 This project involves creating a class representing a graph and implementing various algorithms on the graphs.
 
-## Files
-
-- `Graph.cpp`
-- `Algorithms.cpp`
-
 ### Graph.cpp
 
 Contains the `Graph` class that represents a graph. The class includes the following methods:
