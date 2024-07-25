@@ -25,6 +25,8 @@ namespace ariel {
 
         static void negativeCycle(const Graph& g);
 
+        static std::vector<std::vector<int>> adjMatrix;
+
     private:
         static bool bfs(const Graph& g, int start, std::vector<int>& distance, std::vector<int>& predecessor);
     };
