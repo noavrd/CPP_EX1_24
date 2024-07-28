@@ -132,89 +132,90 @@ namespace ariel {
         return result;  
     }
 
-    bool ariel::Algorithms::isContainsCycle(const Graph& g) {
-        const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();
-        size_t adjSize = adjMatrix.size();
-    
+  bool ariel::Algorithms::isContainsCycle(const Graph& g) {
+    const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();
+    size_t adjSize = adjMatrix.size();
 
-        // vector to track visited vertices, initialized with false
-        std::vector<bool> visited(static_cast<size_t>(adjSize), false);
-        // vector to track the parent of each vertex, initialized with -1
-        std::vector<int> parent(static_cast<size_t>(adjSize), -1);
+    // vector to track visited vertices, initialized with false
+    std::vector<bool> visited(static_cast<size_t>(adjSize), false);
+    // vector to track the parent of each vertex, initialized with -1
+    std::vector<int> parent(static_cast<size_t>(adjSize), -1);
 
-        // iterate over all vertices in the graph
-        for (size_t u = 0; u < adjSize; ++u) {  
-            // if the vertex has not been visited
-            if (!visited[u]) {  
-                // queue for bfs algorithm
-                std::queue<int> queue;  
-                // mark the vertex as visited
-                visited[u] = true;  
-                // add the vertex to the queue
-                queue.push(static_cast<int>(u));
+    // iterate over all vertices in the graph
+    for (size_t u = 0; u < adjSize; ++u) {
+        // if the vertex has not been visited
+        if (!visited[u]) {
+            // queue for bfs algorithm
+            std::queue<int> queue;
+            // mark the vertex as visited
+            visited[u] = true;
+            // add the vertex to the queue
+            queue.push(static_cast<int>(u));
 
-                // while the queue is not empty
-                while (!queue.empty()) {  
-                    // get the first vertex in the queue
-                    int v = queue.front();  
-                    // remove the vertex from the queue
-                    queue.pop();  
+            // while the queue is not empty
+            while (!queue.empty()) {
+                // get the first vertex in the queue
+                int v = queue.front();
+                // remove the vertex from the queue
+                queue.pop();
 
-                    // iterate over all vertices in the graph
-                    for (size_t w = 0; w < adjSize; ++w) {  
-                        // if there is an edge from v to w
-                        if (adjMatrix[static_cast<size_t>(v)][w] != 0) {
-                            // if w has not been visited
-                            if (!visited[w]) {  
-                                // mark w as visited
-                                visited[w] = true;  
-                                // set v as the parent of w
-                                parent[w] = v;  
-                                // add w to the queue
-                                queue.push(static_cast<int>(w));
-                            } 
+                // iterate over all vertices in the graph
+                for (size_t w = 0; w < adjSize; ++w) {
+                    // if there is an edge from v to w
+                    if (adjMatrix[static_cast<size_t>(v)][w] != 0) {
+                        // if w has not been visited
+                        if (!visited[w]) {
+                            // mark w as visited
+                            visited[w] = true;
+                            // set v as the parent of w
+                            parent[w] = v;
+                            // add w to the queue
+                            queue.push(static_cast<int>(w));
+                        } 
                         // if w has been visited and w is not the parent of v
-                        } else if (w != static_cast<size_t>(parent[v])) {
+                        else if (w != static_cast<size_t>(parent[static_cast<size_t>(v)])) {
                             // print message about cycle detection
-                            std::cout << "cycle found: ";  
+                            std::cout << "cycle found: ";
                             // save the starting vertex of the cycle
-                            int cycle_vertex = v;  
+                            int cycle_vertex = v;
                             // vector to store the vertices in the cycle
-                            std::vector<int> cycle;  
+                            std::vector<int> cycle;
                             // build the cycle path
                             while (cycle_vertex != static_cast<int>(w)) {
                                 // add the current vertex to the cycle
-                                cycle.push_back(cycle_vertex);  
+                                cycle.push_back(cycle_vertex);
                                 // move to the parent vertex
                                 cycle_vertex = parent[static_cast<size_t>(cycle_vertex)];
                             }
                             // add the end vertex to the cycle
                             cycle.push_back(static_cast<int>(w));
                             // add the starting vertex to the cycle
-                            cycle.push_back(v);  
+                            cycle.push_back(v);
                             // iterate over all vertices in the cycle
-                            for (size_t i = 0; i < cycle.size(); ++i) {  
+                            for (size_t i = 0; i < cycle.size(); ++i) {
                                 // print the current vertex
-                                std::cout << cycle[i];  
+                                std::cout << cycle[i];
                                 // if this is not the last vertex in the cycle
-                                if (i < cycle.size() - 1) {  
+                                if (i < cycle.size() - 1) {
                                     // print the arrow to the next vertex
-                                    std::cout << "->";  
+                                    std::cout << "->";
                                 }
                             }
                             // end the line after the cycle
-                            std::cout << std::endl;  
+                            std::cout << std::endl;
                             // return true when a cycle is found
-                            return true;  
+                            return true;
                         }
                     }
                 }
             }
         }
-    
-        // return false if no cycle is found
-        return false;  
     }
+
+    // return false if no cycle is found
+    return false;
+}
+
 
     std::string ariel::Algorithms::isBipartite(const Graph& g) {
         const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();  
