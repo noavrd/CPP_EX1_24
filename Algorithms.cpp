@@ -174,7 +174,7 @@ namespace ariel {
                                 queue.push(static_cast<int>(w));
                             } 
                         // if w has been visited and w is not the parent of v
-                        } else if (static_cast<size_t>(w) != static_cast<size_t>(parent[v])) {
+                        } else if (w != static_cast<size_t>(parent[v])) {
                             // print message about cycle detection
                             std::cout << "cycle found: ";  
                             // save the starting vertex of the cycle
