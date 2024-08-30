@@ -1,192 +1,147 @@
 // noavrd@gmail.com
-
 #include "Algorithms.hpp"
-#include <queue>
-#include <stack>
-#include <unordered_set>
-#include <limits>
-#include <iostream>
-#include <algorithm>
-#include <vector>
+#include <list>
+#define true 1
+#define false 0
+#define INT_MAX 999
 
+using namespace std;
+using namespace ariel;
 
-namespace ariel {
-    std::vector<std::vector<int>> Algorithms::adjMatrix;
-    // vector <int> Algorithms::dist;
+/* 
+ *  Check if a graph is connected, using BFS algoritem, with a list to check each vertex in a FIFO.
+ *
+ *  This function checks if all parts of a graph are connected. It starts from the first point and explores all connected points. 
+ *  If it can reach all of the points, the graph is connected. 
+ *  If not, the graph is disconnected. 
+ *
+ */
+int Algorithms::isConnected(const Graph &g) {
+    // get the number of vertices in a graph
+    size_t size = g.graphSize();
+    vector<int> checkVertex(size, 0);
+    vector<vector<int>> adjMatrix = g.getMatrix();
 
-    bool ariel::Algorithms::bfs(const Graph& g, int start, std::vector<int>& distance,  std::vector<int>& prev) {
-        // get adjacency matrix
-        const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();
-        // size of the graph (number of vertices)
-        size_t adjSize = adjMatrix.size();
-  
+    // starting the bfs from the first node
+    list<size_t> verticsToCheck;
+    verticsToCheck.push_back(0);  
+    
+    // check as long as it didn't check all the vertics
+    // using BFS so it will start from the first elemnt in the list - fifo
+    while (!verticsToCheck.empty()) {
+        size_t node = verticsToCheck.front();  
+        verticsToCheck.pop_front();  
         
-        // create a queue to use in the algorithm and add the starting vertex to the queue
-        std::queue<int> queue; 
-        queue.push(start);  
-
-        // the distance from the start vertex to itself is 0
-        distance[static_cast<size_t>(start)] = 0;
-
-        // infinite distance (not reachable)
-        int infiniteDistance = std::numeric_limits<int>::max();
-
-        // while the queue isn't empty
-        while (!queue.empty()) {  
-            // get the first vertex in the queue and remove it
-            int vertex = queue.front();  
-            queue.pop();  
-
-            // iterate over all nodes in the graph
-            for (size_t secVertex = 0; secVertex < adjSize; ++secVertex) {  
-                // check if there is an edge and the second vertex has not been visited
-                if (adjMatrix[static_cast<size_t>(vertex)][secVertex] != 0 && distance[secVertex] == infiniteDistance) {  
-                    // update the distance to the next vertex
-                    distance[secVertex] = distance[static_cast<size_t>(vertex)] + 1;
-                    // save the prev vertex
-                    prev[secVertex] = vertex;  
- 
-                    // add the second vertex to the queue
-                    queue.push(secVertex); 
+        if (!checkVertex[node]) {
+            // mark the current vertex as checked
+            checkVertex[node] = 1;  
+            
+            for (size_t i = 0; i < size; ++i) {
+                if (adjMatrix[node][i] != 0 && !checkVertex[i]) {
+                    // Add connected unvisited nodes to the back of the list
+                    verticsToCheck.push_back(i);  
                 }
             }
         }
-
-        // return true, BFS completed
-        return true;  
     }
+    
+    // check if all the vertics where vistied
+    for (int vertex : checkVertex) {
+        if (vertex == 0)
+            return false;  
+    }
+    
+    return true;  
+}
+/*
+ *  Check what is the shortest path between a start and an end node in a graph using BFS.
+ *
+ *  It using a list that helps keep track which nodes needs to be visited next.
+ *  It checks each node's neighbors one by one. If there is a path it will return the path, if not it will return -1.
+ *
+ */
+string Algorithms::shortestPath(const Graph &g, size_t start, size_t end){
+    size_t size = g.graphSize();
+    // initialize path array to store previous nodes in the shortest path
+    vector<size_t> path(size, (size_t) - 1);
+    vector<vector<int>> adjMatrix = g.getMatrix();
 
-    bool ariel::Algorithms::isConnected(const Graph& graph) {
-        const std::vector<std::vector<int>>& adjMatrix = graph.getAdjMatrix();
-        // number of vertices
-        size_t adjSize = adjMatrix.size();
+    // initialize distance array to store shortest distances from the start node,
+    // and give it 0 because the distance between a node to itself is 0
+    vector<int> shortestDistance(size, -1);
+    shortestDistance[start] = 0;
 
+    // starting the bfs from the first node
+    list<size_t> verticsToCheck;
+    verticsToCheck.push_front(start);
 
-        // check if the graph is empty - if so then it's connected
-        if (adjSize == 0) return true;
+    while (!verticsToCheck.empty()) {
+        // get the next node to process and remove it
+        size_t node = verticsToCheck.front();
+        verticsToCheck.pop_front();
 
-        int inf  = std::numeric_limits<int>::max();
-        // initialize distance var vector with adjSize will be the num of the elements distance will have and each of them will be initalized to inf
-        std::vector<int> distance(static_cast<size_t>(adjSize), inf);
-        std::vector<int> prev(static_cast<size_t>(adjSize), -1);
-
-        // perform bfs starting from the first vertex
-        bfs(graph, 0, distance, prev);
-
-        // check if all vertices are reachable
-        for (size_t i = 0; i < adjSize; ++i) {
-            if (distance[i] == inf) {
-                return false;
+        // explore all neighbors of the current node
+        for (size_t i = 0; i < size; i++) {
+            // check if there is an edge from node to i
+            if (adjMatrix[node][i] != 0) {
+                // check if it wasn't visited, and if so than add it to the disance and updated the path
+                if (shortestDistance[i] == -1) {
+                    shortestDistance[i] = shortestDistance[node] + 1;
+                    path[i] = node;
+                    verticsToCheck.push_front(i);
+                }
             }
         }
-
-        // if all vertices are reachable, the graph is connected
-        return true;
-    }
-    
-    std::string ariel::Algorithms::shortestPath(const Graph& g, int start, int end) {
-        const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();  
-        // get the number of vertices in the graph
-        size_t adjSize = adjMatrix.size();
-    
-
-        // check if the start and end vertices are valid
-        if (start < 0 || start >= adjSize || end < 0 || end >= adjSize) {
-            // return "-1" if the vertices are not valid
-            return "-1";  
-        }
-
-        // define the infinite distance
-        int inf = std::numeric_limits<int>::max();  
-        // initialize distance vector with infinite distances
-        std::vector<int> distance(static_cast<size_t>(adjSize), inf);
-        // initialize prev vector with -1 (no prev)
-        std::vector<int> prev(static_cast<size_t>(adjSize), -1);
-
-        // perform bfs to find the shortest paths from the start vertex
-        bfs(g, start, distance, prev);  
-
-        // check if there is no path to the end vertex
-        if (distance[static_cast<size_t>(end)] == inf) {
-            // return "-1" if there is no path to the end vertex
-            return "-1";  
-        }
-
-        // create a stringstream to build the path string
-        std::stringstream path;  
-        // start from the end vertex
-        int crawl = end;  
-        // traverse the path from end to start
-        while (crawl != -1) {  
-            // add the current vertex to the path
-            path << crawl;
-            if (crawl > 0) {
-               path << "->";
-            }  
-            // move to the prev of the current vertex
-            crawl = prev[static_cast<size_t>(crawl)];
-        }
-
-        // convert the stringstream to a string
-        std::string result = path.str();  
-        // reverse the string to get the correct path order
-        std::reverse(result.begin(), result.end());  
-        // return the path string
-        return result;  
     }
 
-bool ariel::Algorithms::isContainsCycle(const Graph& g) {
-    const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();
-    size_t adjSize = adjMatrix.size();
+    // change the path so it will start from the end
+    string pathString;
+    size_t currentNode = end;
 
-    std::vector<bool> visited(adjSize, false);
-    std::vector<int> parent(adjSize, -1);
+    // check first if it can't reach the end node
+    if (path[currentNode] == -1) {
+        return "-1";
+    }
 
-    for (std::vector<std::vector<int>>::size_type u = 0; u < adjSize; ++u) {
-        if (!visited[u]) {
-            std::queue<std::vector<std::vector<int>>::size_type> queue;
-            visited[u] = true;
-            queue.push(u);
+    // if it can reach the end node then print the path
+    pathString = to_string(currentNode);
+    currentNode = path[currentNode];
 
-            while (!queue.empty()) {
-                std::vector<std::vector<int>>::size_type v = queue.front();
-                queue.pop();
+    while (currentNode != -1) {
+        pathString = to_string(currentNode) + "->" + pathString;
+        currentNode = path[currentNode];
+    }
 
-                for (std::vector<std::vector<int>>::size_type w = 0; w < adjSize; ++w) {
-                    if (adjMatrix[v][w] != 0) {
-                        if (!visited[w]) {
-                            visited[w] = true;
-                            parent[w] = v;
-                            queue.push(w);
-                        } else if (w != parent[v]) {
-                            // Print debugging information
-                            std::cout << 0 << std::endl;
+    return pathString;
+}
 
-                            std::vector<int> cycle;
-                            std::vector<std::vector<int>>::size_type cycle_vertex = v;
+int Algorithms::isContainsCycle( const Graph &g ) { 
+    size_t size = g.graphSize();
+    vector<vector<int>> adjMatrix = g.getMatrix();
 
-                            while (cycle_vertex != static_cast<std::vector<std::vector<int>>::size_type>(w)) {
-                                cycle.push_back(cycle_vertex);
-                                cycle_vertex = static_cast<std::vector<std::vector<int>>::size_type>(parent[cycle_vertex]);
-                                // Check for invalid parent index
-                                if (cycle_vertex >= adjSize) {
-                                    std::cerr << "Invalid parent index encountered!" << std::endl;
-                                    return false;
-                                }
+    vector<bool> visited(size, 0);
+    vector<size_t> parent(size, (size_t)-1);
+
+    for (size_t i = 0; i < size; ++i) {
+        if (!visited[i]) {
+
+            list<size_t> verticsToCheck;
+            verticsToCheck.push_back(i);
+            
+            while (!verticsToCheck.empty()) {
+                size_t node = verticsToCheck.back();
+                verticsToCheck.pop_back();
+
+                if (!visited[node]) {
+                    visited[node] = 1;
+                    for (size_t j = 0; j < size; ++j) {
+                        if (adjMatrix[node][j] != 0) {
+                            if (!visited[j]) {
+                                verticsToCheck.push_back(j);
+                                parent[j] = node;
+                            } else if (parent[node] != j) {
+                                return true;
                             }
-                            cycle.push_back(w);
-                            cycle.push_back(v);
-
-                            // Print the cycle
-                            std::cout << "The cycle is: ";
-                            for (size_t i = 0; i < cycle.size(); ++i) {
-                                std::cout << cycle[i];
-                                if (i < cycle.size() - 1) {
-                                    std::cout << "->";
-                                }
-                            }
-                            std::cout << std::endl;
-                            return true;
                         }
                     }
                 }
@@ -198,153 +153,97 @@ bool ariel::Algorithms::isContainsCycle(const Graph& g) {
 }
 
 
-
-    std::string ariel::Algorithms::isBipartite(const Graph& g) {
-        const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();  
-        size_t adjSize = adjMatrix.size();
-        
-        // color vector, initialized with -1 to indicate no color
-        std::vector<int> color(static_cast<size_t>(adjSize), -1);
-        // queue for bfs algorithm
-        std::queue<int> queue;  
-
-        // iterate over all vertices in the graph
-        for (size_t u = 0; u < adjSize; ++u) {  
-            // if the vertex is not colored
-            if (color[u] == -1) {  
-                // color the vertex with color 0
-                color[u] = 0;  
-                // add the vertex to the queue
-                queue.push(static_cast<int>(u));
-
-                // while the queue is not empty
-                while (!queue.empty()) {  
-                    // get the first vertex in the queue
-                    int v = queue.front();  
-                    // remove the vertex from the queue
-                    queue.pop();  
-
-                    // iterate over all vertices in the graph
-                    for (size_t w = 0; w < adjSize; ++w) {  
-                        // if there is an edge from v to w
-                        if (adjMatrix[static_cast<size_t>(v)][w] != 0) {
-                            // if w is not colored
-                            if (color[w] == -1) {  
-                                // color w with the opposite color of v
-                                color[w] = 1 - color[static_cast<size_t>(v)];
-                                // add w to the queue
-                                queue.push(static_cast<int>(w));
-                            } 
-                            // if w is already colored and has the same color as v
-                            else if (color[w] == color[static_cast<size_t>(v)]) {                            // the graph is not bipartite
-                                return "0";  
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // variable to build the result string
-        std::stringstream bipartiteSets;  
-        // start building the string
-        bipartiteSets << "the graph is bipartite: a={";  
-        // helper variable to check position
-        bool first = true;  
-        // iterate over all vertices in the graph
-        for (size_t i = 0; i < adjSize; ++i) {  
-            // if the vertex is colored 0
-            if (color[i] == 0) {  
-                // if it is not the first vertex
-                if (!first) {  
-                    // add comma and space
-                    bipartiteSets << ", ";  
-                }
-                // add the vertex to the string
-                bipartiteSets << i;  
-                // update the first variable
-                first = false;  
-            }
-        }
-        // continue building the string
-        bipartiteSets << "}, b={";  
-        // initialize the first variable
-        first = true;  
-        // iterate over all vertices in the graph
-        for (size_t i = 0; i < adjSize; ++i) {  
-            // if the vertex is colored 1
-            if (color[i] == 1) {  
-                // if it is not the first vertex
-                if (!first) {  
-                    // add comma and space
-                    bipartiteSets << ", ";  
-                }
-                // add the vertex to the string
-                bipartiteSets << i;  
-                // update the first variable
-                first = false;  
-            }
-        }
-        // finish building the string
-        bipartiteSets << "}";  
-        // return the string
-        return bipartiteSets.str();  
-    }
-
-    void ariel::Algorithms::negativeCycle(const Graph& g) {
-        const std::vector<std::vector<int>>& adjMatrix = g.getAdjMatrix();  
-        size_t adjSize = adjMatrix.size();
+string Algorithms::isBipartite( const Graph &g ) {
+    size_t size = g.graphSize();
+    vector<vector<int>> adjMatrix = g.getMatrix();
     
+    vector<int> twoGroups(size, -1);
+    twoGroups[0] = 0;
 
-        // vector for distances, initialized with max value
-        std::vector<int> distance(static_cast<size_t>(adjSize), std::numeric_limits<int>::max());
-        // vector of prevs, initialized with -1
-        std::vector<int> prev(static_cast<size_t>(adjSize), -1);
+    list<size_t> verticsToCheck;  
+    verticsToCheck.push_back(0);
 
+    while (!verticsToCheck.empty()) {
+        size_t node = verticsToCheck.front();
+        verticsToCheck.pop_front();
 
-        // distance from the starting vertex to itself is 0
-        distance[0] = 0;  
-
-        // relaxation of all edges n-1 times
-        for (size_t i = 1; i < adjSize; ++i) {
-            for (size_t u = 0; u < adjSize; ++u) {
-                for (size_t v = 0; v < adjSize; ++v) {
-                    if (adjMatrix[static_cast<size_t>(u)][v] != 0 && distance[u] != std::numeric_limits<int>::max() && distance[u] + adjMatrix[static_cast<size_t>(u)][v] < distance[v]) {
-                        distance[v] = distance[u] + adjMatrix[static_cast<size_t>(u)][v];
-                        prev[v] = static_cast<int>(u);
-                    }
+        for (size_t i = 0; i < size; ++i) {
+            if (adjMatrix[node][i] != 0) {
+                if (twoGroups[i] == -1) {
+                    twoGroups[i] = 1 - twoGroups[node];
+                    verticsToCheck.push_back(i);
+                } else if (twoGroups[i] == twoGroups[node]) {
+                        return "0"; 
                 }
             }
         }
-
-        // check if there is a negative cycle
-        for (size_t u = 0; u < adjSize; ++u) {
-            for (size_t v = 0; v < adjSize; ++v) {
-                if (adjMatrix[static_cast<size_t>(u)][v] != 0 && distance[u] != std::numeric_limits<int>::max() && distance[u] + adjMatrix[static_cast<size_t>(u)][v] < distance[v]) {
-                    // found a negative cycle
-                    std::cout << "negative cycle found: ";
-                    int cycle_vertex = static_cast<int>(v);
-                    std::vector<int> cycle;
-                    std::unordered_set<int> visited;
-                    while (visited.find(cycle_vertex) == visited.end()) {
-                        cycle.push_back(cycle_vertex);
-                        visited.insert(cycle_vertex);
-                        cycle_vertex = prev[static_cast<size_t>(cycle_vertex)];
-                    }
-                    cycle.push_back(cycle_vertex);
-                    for (size_t i = 0; i < cycle.size(); ++i) {
-                        std::cout << cycle[i];
-                        if (i < cycle.size() - 1) {
-                            std::cout << "->";
-                        }
-                    }
-                    std::cout << std::endl;
-                    return;
-                }
-            }
-        }
-
-        // if no negative cycle is found
-        std::cout << "no negative cycle found" << std::endl;
     }
+
+    vector<int> firstSide, secondSide;
+
+    for (size_t i = 0; i < size; ++i){
+        if (twoGroups[i] == 0) {
+            firstSide.push_back(i);
+        }
+        else {
+            secondSide.push_back(i);
+        }
+    }
+
+    string result = "The graph is bipartite: A={";
+
+    for (size_t i = 0; i < firstSide.size(); ++i) {
+        result += to_string(firstSide[i]);
+        if (i != firstSide.size() - 1) {
+            result += ", ";
+        }
+    }
+
+    result += "}, B={";
+
+    for (size_t i = 0; i < secondSide.size(); ++i) {
+        result += to_string(secondSide[i]);
+        if (i != secondSide.size() - 1) {
+            result += ", ";
+        }
+    }
+
+    result += "}";
+    return result;
+}
+
+string Algorithms::negativeCycle( const Graph &g ) {
+    if(!isContainsCycle(g)) {
+        return "There is no negative cycle";
+    }
+
+    size_t size = g.graphSize();
+    vector<vector<int>> adjMatrix = g.getMatrix();
+
+    vector<int> distance(size, -1); 
+    distance[0] = 0;
+
+    for (size_t i = 0; i < size - 1; ++i) {
+        for (size_t w = 0; w < size; ++w) {
+            for (size_t v = 0; v < size; ++v) {
+                if (adjMatrix[w][v] != 0) {
+                    if (distance[w] != -1 && distance[w] + adjMatrix[w][v] < distance[v]) {
+                        distance[v] = distance[w] + adjMatrix[w][v];
+                    }
+                }
+            }
+        }
+    }
+
+    for (size_t w = 0; w < size; ++w) {
+        for (size_t v = 0; v < size; ++v) {
+            if (adjMatrix[w][v] != 0) {
+                if (distance[w] != -1 && distance[w] + adjMatrix[w][v] < distance[v]) {
+                    return "found from "+ std::to_string(distance[w]);
+                }
+            }
+        }
+    }
+
+    return "There is no negative cycle";
 }

@@ -2,35 +2,26 @@
 #ifndef ALGORITHMS_HPP
 #define ALGORITHMS_HPP
 
-#include "Graph.hpp"
 #include <vector>
-#include <queue>
-#include <string>
-#include <limits>
-#include <sstream>
-#include <stack>
-#include <unordered_set>
+#include <iostream>
+#include "Graph.hpp"
 
-namespace ariel {
+using namespace std;
 
+namespace ariel{
+    
     class Algorithms {
-    public:
-        static bool isConnected(const Graph& g);
+        public:
+            static int isConnected(const Graph &g);
 
-        static std::string shortestPath(const Graph& g, int start, int end);
-
-        static bool isContainsCycle(const Graph& g);
-
-        static std::string isBipartite(const Graph& g);
-
-        static void negativeCycle(const Graph& g);
-
-        static std::vector<std::vector<int>> adjMatrix;
-
-    private:
-        static bool bfs(const Graph& g, int start, std::vector<int>& distance, std::vector<int>& predecessor);
+            static string shortestPath(const Graph &g, size_t start, size_t end);
+            
+            static int isContainsCycle(const Graph &g);
+            
+            static string isBipartite(const Graph &g);
+            
+            static string negativeCycle(const Graph &g);
     };
-
+    
 }
-
-#endif
+#endif //ALGORITHMS_HPP
