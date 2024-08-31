@@ -35,15 +35,18 @@ namespace ariel {
             Graph operator++(int);
 
             Graph operator+=(const Graph &secGraph);
+            Graph &operator+=(int scalar);
 
             // - operators
             Graph operator-() const;
             Graph operator-(const Graph &secGraph) const;
 
             Graph &operator--();
-
             Graph operator--(int);
+
             Graph operator-=(const Graph &secGraph);
+            Graph &operator-=(int scalar);
+
 
             // * operators
             Graph operator*(const Graph &secGraph) const;
