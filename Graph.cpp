@@ -6,11 +6,15 @@
 #include <sstream>
 #include <ostream>
 #include <string>
+
 using namespace std;
 using namespace ariel;
 
 Graph::Graph() {}
 
+/*
+*  A function that loads the graph.
+*/
 void Graph::loadGraph(const vector<vector<int>> &adjMatrix) {
     size_t size = adjMatrix.size();
     for (const vector<int> &row : adjMatrix) {
@@ -21,34 +25,33 @@ void Graph::loadGraph(const vector<vector<int>> &adjMatrix) {
     this->matrix = adjMatrix;
 }
 
-// fix this!!!!
-std::string Graph::printGraph() const {
+/*
+*   Print graph function.
+*
+*   It uses graphSize and countEdges helper function to print the grapg vertics and edges.
+*/
+void Graph::printGraph() const {
     size_t size = graphSize();
-    std::string matrixprint;  
-    for (size_t i = 0; i < size; ++i) {
-        matrixprint += "[";  
-        for (size_t j = 0; j < size; ++j) {
-            matrixprint += std::to_string(matrix[i][j]);  
-            if (j < size - 1) {
-                matrixprint += ", ";
-            }
-        }
-        matrixprint += "]";
-        if (i < size - 1) {
-            matrixprint += "\n";  
-        }
-    }
-    return matrixprint;
+    size_t edges = countEdges();
+
+    std::cout << "Graph with " << size << " vertices and " << edges << " edges." << std::endl;
 }
+
 
 const vector<vector<int>> &Graph::getMatrix() const {
     return this->matrix;
 }
 
+/*
+*   Helper function to get the size of the current graph.
+*/
 size_t Graph::graphSize() const {
     return this->matrix.size();
 }
 
+/*
+*   Helper function to count the edges of the current graph.
+*/
 size_t Graph::countEdges() const {
     size_t count = 0;
 
@@ -63,16 +66,32 @@ size_t Graph::countEdges() const {
     return count;
 }
 
+/*
+*   Helper function to check if 2 graphs are in the same size to make calculations.
+*/
+bool Graph::checkValid(const Graph &secGraph) const {
+    if (this->matrix.size() != secGraph.getMatrix().size()) {
+       throw invalid_argument("Graphs must be the same size.");
+    }
+    return true;
+}
+
+/*
+*   Helper function to intiazlize result matrix
+*/
+vector<vector<int>> initializeResultMatrix(size_t size) {
+    return vector<vector<int>>(size, vector<int>(size));
+}
+
+
 Graph Graph::operator+() const {
     return *this;
 }
 
 Graph Graph::operator+(const Graph &secGraph) const {
-    if (this->graphSize() != secGraph.graphSize()) {
-        throw invalid_argument("Graphs must be the same size.");
-    }
+    checkValid(secGraph);
 
-    vector<vector<int>> result(this->matrix.size(), vector<int>(this->matrix.size()));
+        vector<vector<int>> result = initializeResultMatrix(this->matrix.size());
 
     for (size_t i = 0; i < this->matrix.size(); ++i) {
         for (size_t j = 0; j < this->matrix.size(); ++j) {
@@ -102,11 +121,9 @@ Graph Graph::operator++(int) {
 }
 
 Graph Graph::operator+=(const Graph &secGraph)  {
-    if (this->graphSize() != secGraph.graphSize()) {
-        throw invalid_argument("Graphs must be the same size.");
-    }
+    checkValid(secGraph);
 
-    vector<vector<int>> result(this->matrix.size(), vector<int>(this->matrix.size()));
+        vector<vector<int>> result = initializeResultMatrix(this->matrix.size());
 
     for (size_t i = 0; i < this->matrix.size(); ++i) {
         for (size_t j = 0; j < this->matrix.size(); ++j) {
@@ -124,11 +141,9 @@ Graph Graph::operator-() const {
 
 
 Graph Graph::operator-(const Graph &secGraph) const {
-    if (this->graphSize() != secGraph.graphSize()) {
-        throw invalid_argument("Graphs must be the same size.");
-    }
+    checkValid(secGraph);
 
-    vector<vector<int>> result(this->matrix.size(), vector<int>(this->matrix.size()));
+        vector<vector<int>> result = initializeResultMatrix(this->matrix.size());
 
     for (size_t i = 0; i < this->matrix.size(); ++i) {
         for (size_t j = 0; j < this->matrix.size(); ++j) {
@@ -157,11 +172,9 @@ Graph Graph::operator--(int) {
 }
 
 Graph Graph::operator-=(const Graph &secGraph)  {
-    if (this->graphSize() != secGraph.graphSize()) {
-        throw invalid_argument("Graphs must be the same size.");
-    }
+    checkValid(secGraph);
 
-    vector<vector<int>> result(this->matrix.size(), vector<int>(this->matrix.size()));
+        vector<vector<int>> result = initializeResultMatrix(this->matrix.size());
     for (size_t i = 0; i < this->matrix.size(); ++i) {
         for (size_t j = 0; j < this->matrix.size(); ++j) {
             result[i][j] = this->matrix[i][j] - secGraph.matrix[i][j];
@@ -194,7 +207,7 @@ Graph Graph::operator*(const Graph &secGraph) const {
 }
 
 Graph Graph::operator*(int scalar) const {
-    vector<vector<int>> result(this->matrix.size(), vector<int>(this->matrix.size()));
+    vector<vector<int>> result = initializeResultMatrix(this->matrix.size());
 
     for (size_t i = 0; i < this->graphSize(); ++i) {
         for (size_t j = 0; j < this->graphSize(); ++j) {
@@ -219,7 +232,7 @@ Graph &Graph::operator*=(int scalar) {
 
 Graph &Graph::operator/=(int scalar) {
     if (scalar == 0) {
-        throw invalid_argument("YOu can't divide by 0.");
+        throw invalid_argument("You can't divide by 0.");
     }
     for (size_t i = 0; i < this->graphSize(); ++i) {
         for (size_t j = 0; j < this->graphSize(); ++j) {
@@ -248,14 +261,14 @@ bool Graph::operator<(const Graph &secGraph) const {
         return false;
     }
 
-    size_t thisEdges = countEdges();
+    size_t edges = countEdges();
     size_t secGraphEdges = secGraph.countEdges();
 
-    if (thisEdges < secGraphEdges) {
+    if (edges < secGraphEdges) {
         return true;
     }
 
-    if (thisEdges > secGraphEdges) {
+    if (edges > secGraphEdges) {
         return false;
     }
 

@@ -1,10 +1,12 @@
 // noavrd@gmail.com
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
+
 #include <ostream>
 #include <iostream>
 #include <vector>
 #include <string>
+
 using namespace std;
 
 namespace ariel {
@@ -12,11 +14,13 @@ namespace ariel {
     class Graph {
         private:
             vector<vector<int>> matrix;
+            bool checkValid(const Graph &secGraph) const;
+            vector<vector<int>> result;
 
         public:
             Graph();
             void loadGraph(const vector<vector<int>> &matrix);
-            std::string printGraph() const;
+            void printGraph() const;
 
             const vector<vector<int>>& getMatrix() const;
 
