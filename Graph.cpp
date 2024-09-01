@@ -13,6 +13,14 @@ using namespace ariel;
 Graph::Graph() {}
 
 /*
+ *  Add load graph to constructor to make it more dynamic, so i can always change the graph i'm holding.
+ */
+Graph::Graph(const vector<vector<int>> &matrix) {
+    this->loadGraph(matrix);
+}
+
+
+/*
  *  A function that loads the graph.
  */
 void Graph::loadGraph(const vector<vector<int>> &adjMatrix) {
@@ -182,11 +190,11 @@ Graph &Graph::operator+=(int scalar) {
 /*
  *  Return a copy of the current graph.
  *
- *  This operator simply returns a new graph that is a copy of the current one.
+ *  This operator simply returns a new graph multipy by -1, that is a copy of the current one.
  *
  */
 Graph Graph::operator-() const {
-    return *this;
+    return *this * (-1);
 }
 
 /*
@@ -291,13 +299,17 @@ Graph Graph::operator*(const Graph &secGraph) const {
 
     size_t size = this->graphSize();
     std::vector<std::vector<int>> result(size, std::vector<int>(size, 0));
-
+    
     for (size_t i = 0; i < size; ++i) {
         for (size_t j = 0; j < size; ++j) {
             for (size_t k = 0; k < size; ++k) {
                 result[i][j] += this->matrix[i][k] * secGraph.matrix[k][j];
             }
         }
+    }
+
+    for (size_t i=0; i<size; i++){ 
+            result[i][i]=0;
     }
 
     Graph newGraph;

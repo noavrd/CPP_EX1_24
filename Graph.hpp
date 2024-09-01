@@ -18,7 +18,9 @@ namespace ariel {
             vector<vector<int>> result;
 
         public:
-            Graph();
+            Graph();  // Default constructor
+            Graph(const vector<vector<int>> &matrix); 
+            ~Graph() = default;
             void loadGraph(const vector<vector<int>> &matrix);
             void printGraph() const;
 
