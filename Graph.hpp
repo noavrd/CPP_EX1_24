@@ -70,7 +70,7 @@ namespace ariel {
             bool operator>=(const Graph &secGraph) const;
 
             // print operators
-            friend std::ostream& operator<<(std::ostream &out, const Graph &g);
+            friend ostream& operator<<(ostream &out, const Graph &g);
 
     };
 }

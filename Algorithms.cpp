@@ -268,11 +268,11 @@ string Algorithms::negativeCycle(const Graph &g) {
 
     // check distance for each node
     for (size_t i = 0; i < size - 1; ++i) {
-        for (size_t w = 0; w < size; ++w) {
-            for (size_t v = 0; v < size; ++v) {
-                if (adjMatrix[w][v] != 0) {
-                    if (distance[w] != -1 && distance[w] + adjMatrix[w][v] < distance[v]) {
-                        distance[v] = distance[w] + adjMatrix[w][v];
+        for (size_t j = 0; j < size; ++j) {
+            for (size_t k = 0; k < size; ++k) {
+                if (adjMatrix[j][k] != 0) {
+                    if (distance[j] != -1 && distance[j] + adjMatrix[j][k] < distance[k]) {
+                        distance[k] = distance[j] + adjMatrix[j][k];
                     }
                 }
             }
@@ -280,11 +280,11 @@ string Algorithms::negativeCycle(const Graph &g) {
     }
 
     // Check for negative weight cycles.
-    for (size_t w = 0; w < size; ++w) {
-        for (size_t v = 0; v < size; ++v) {
-            if (adjMatrix[w][v] != 0) {
-                if (distance[w] != -1 && distance[w] + adjMatrix[w][v] < distance[v]) {
-                    return "Negative cycle: " + std::to_string(distance[w]);
+    for (size_t j = 0; j < size; ++j) {
+        for (size_t k = 0; k < size; ++k) {
+            if (adjMatrix[j][k] != 0) {
+                if (distance[j] != -1 && distance[j] + adjMatrix[j][k] < distance[k]) {
+                    return "Negative cycle: " + to_string(distance[j]);
                 }
             }
         }

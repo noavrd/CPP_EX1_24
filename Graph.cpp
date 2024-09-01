@@ -27,7 +27,7 @@ void Graph::loadGraph(const vector<vector<int>> &adjMatrix) {
     size_t size = adjMatrix.size();
     for (const vector<int> &row : adjMatrix) {
         if (row.size() != size) {
-             throw std::invalid_argument("Invalid graph: The graph is not a square matrix.");
+             throw invalid_argument("Invalid graph: The graph is not a square matrix.");
         }
     }
     this->matrix = adjMatrix;
@@ -42,7 +42,7 @@ void Graph::printGraph() const {
     size_t size = graphSize();
     size_t edges = countEdges();
 
-    std::cout << "Graph with " << size << " vertices and " << edges << " edges." << std::endl;
+    cout << "Graph with " << size << " vertices and " << edges << " edges." << endl;
 }
 
 
@@ -142,9 +142,9 @@ Graph &Graph::operator++() {
  *  This operator creates a copy of the current graph, increments the current graph by 1, and then returns the copy.
  */
 Graph Graph::operator++(int) {
-    Graph temp = *this;
+    Graph newGraph = *this;
     ++(*this);
-    return temp;
+    return newGraph;
 }
 
 /*
@@ -240,9 +240,9 @@ Graph &Graph::operator--() {
  *  This operator creates a copy of the current graph, decrements the current graph by 1, and then returns the copy.
  */
 Graph Graph::operator--(int) {
-    Graph temp = *this;
+    Graph newGraph = *this;
     --(*this);
-    return temp;
+    return newGraph;
 }
 
 /*
@@ -294,11 +294,11 @@ Graph &Graph::operator-=(int scalar) {
  */
 Graph Graph::operator*(const Graph &secGraph) const {
     if (this->graphSize() != secGraph.graphSize()) {
-        throw std::invalid_argument("The number of columns in the first matrix must be equal to the number of rows in the second matrix.");
+        throw invalid_argument("The number of columns in the first matrix must be equal to the number of rows in the second matrix.");
     }
 
     size_t size = this->graphSize();
-    std::vector<std::vector<int>> result(size, std::vector<int>(size, 0));
+    vector<vector<int>> result(size, vector<int>(size, 0));
     
     for (size_t i = 0; i < size; ++i) {
         for (size_t j = 0; j < size; ++j) {
@@ -453,7 +453,7 @@ bool Graph::operator>=(const Graph &secGraph) const {
 /* 
  *  An operator that prints the graph to the given output stream.
  */
-std::ostream &ariel::operator<<(std::ostream &out, const Graph &g) {
+ostream &ariel::operator<<(ostream &out, const Graph &g) {
     const auto &matrix = g.getMatrix();
 
     for (size_t i = 0; i < matrix.size(); ++i) {
@@ -470,7 +470,7 @@ std::ostream &ariel::operator<<(std::ostream &out, const Graph &g) {
         out << "]";
 
         if (i == matrix.size() - 1 ) {
-                out << std::endl;
+                out << endl;
             } else {
                 out << ", ";
             }
